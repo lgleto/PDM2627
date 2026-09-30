@@ -30,63 +30,148 @@ fun CalculatorView(
 ) {
 
     var displayText by remember { mutableStateOf("0") }
+    var calculatorBrain by remember { mutableStateOf(CalculatorBrain()) }
+    var userIsInTheMiddleOfIntroduction by remember { mutableStateOf(false ) }
 
     val onNumberPressed : (String) -> Unit = { num ->
-        if (!(displayText.contains(".") && num == ".")){
-            if (displayText == "0") {
-                if (num == "."){
+        if (userIsInTheMiddleOfIntroduction) {
+            if (!(displayText.contains(".") && num == ".")) {
+                if (displayText == "0") {
+                    if (num == ".") {
+                        displayText += num
+                    } else {
+                        displayText = num
+                    }
+                } else {
                     displayText += num
-                }else {
-                    displayText = num
                 }
-            } else {
-                displayText += num
             }
+        }else{
+            displayText = num
         }
+
+        userIsInTheMiddleOfIntroduction = true
+    }
+
+    val onOperationPressed : (String) -> Unit = { op ->
+
+        calculatorBrain.doOperation(displayText.toDouble())
+        var result = calculatorBrain.accumulator
+
+        if (result % 1.0 == 0.0){
+            displayText = "${result.toInt()}"
+        }else {
+            displayText = "${result}"
+        }
+        calculatorBrain.operation = Operation.getOperation(op)
+
+        userIsInTheMiddleOfIntroduction = false
+
+    }
+
+
+    val onUnaryOperationPressed : (String) -> Unit = { op ->
+        calculatorBrain.operation = Operation.getOperation(op)
+        calculatorBrain.doOperation(displayText.toDouble())
+        var result = calculatorBrain.accumulator
+
+        if (result % 1.0 == 0.0){
+            displayText = "${result.toInt()}"
+        }else {
+            displayText = "${result}"
+        }
+
+        userIsInTheMiddleOfIntroduction = false
+
     }
 
     Column( modifier = modifier.fillMaxSize() ) {
         Text(
             text = displayText,
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             textAlign = TextAlign.Right,
             fontSize = TextUnit(70.0f, TextUnitType.Sp)
         )
         Row (modifier = Modifier.weight(1f)) {
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "C" , isOperation = true, onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "%" , isOperation = true, onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "√" , isOperation = true, onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "±" , isOperation = true, onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "C" , isOperation = true,
+                onClick = {
+                    calculatorBrain.operation = null
+                    calculatorBrain.accumulator = 0.0
+                    displayText = "0"
+                } )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "%" , isOperation = true, onClick = onUnaryOperationPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "√" , isOperation = true, onClick = onUnaryOperationPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "±" , isOperation = true, onClick = onUnaryOperationPressed )
         }
         Row (modifier = Modifier.weight(1f)) {
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "7" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "8" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "9" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "+" , isOperation = true, onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "7" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "8" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "9" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "+" , isOperation = true, onClick = onOperationPressed )
         }
         Row (modifier = Modifier.weight(1f)) {
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "4" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "5" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "6" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "-" , isOperation = true, onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "4" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "5" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "6" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "-" , isOperation = true, onClick = onOperationPressed )
         }
         Row (modifier = Modifier.weight(1f)) {
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "1" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "2" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "3" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "×" , isOperation = true, onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "1" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "2" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "3" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "×" , isOperation = true, onClick = onOperationPressed )
         }
         Row {
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "0" , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "." , onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "=" , isOperation = true, onClick = onNumberPressed )
-            CalcButton( modifier = Modifier.weight(1f).padding(4.dp), label = "÷" , isOperation = true, onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "0" , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "." , onClick = onNumberPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "=" , isOperation = true, onClick = onOperationPressed )
+            CalcButton( modifier = Modifier
+                .weight(1f)
+                .padding(4.dp), label = "÷" , isOperation = true, onClick = onOperationPressed )
         }
     }
 
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
