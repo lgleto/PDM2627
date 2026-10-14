@@ -52,4 +52,11 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // define a BOM and its version
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.5.0"))
+
+    // define any required OkHttp artifacts without version
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
 }
