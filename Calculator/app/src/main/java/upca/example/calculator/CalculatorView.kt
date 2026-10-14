@@ -56,7 +56,7 @@ fun CalculatorView(
     val onOperationPressed : (String) -> Unit = { op ->
 
         calculatorBrain.doOperation(displayText.toDouble())
-        var result = calculatorBrain.accumulator
+        val result = calculatorBrain.accumulator
 
         if (result % 1.0 == 0.0){
             displayText = "${result.toInt()}"
