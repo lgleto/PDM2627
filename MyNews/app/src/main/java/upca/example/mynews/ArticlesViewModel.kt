@@ -13,15 +13,26 @@ import okhttp3.Request
 import org.json.JSONObject
 import java.util.Date
 
+data class ArticlesViewState (
+    val articles : List<Article> = arrayListOf(),
+    val error : String? = null,
+    val isLoading : Boolean = false
+)
+
 class ArticlesViewModel : ViewModel() {
-    private val _articles = MutableStateFlow(arrayListOf<Article>())
-    val articles : StateFlow<List<Article>> = _articles.asStateFlow()
+
+    private val _uiState = MutableStateFlow(ArticlesViewState())
+    val uiState : StateFlow<ArticlesViewState> = _uiState.asStateFlow()
 
     fun fetchArticles(){
+        _uiState.value = _uiState.value.copy(
+            isLoading = true,
+            error = null
+        )
         viewModelScope.launch(Dispatchers.IO) {
             val client = OkHttpClient()
             val request = Request.Builder()
-                .url("https://anewsapi.org/v2/top-headlines?country=us&apiKey=1765f87e4ebc40229e80fd0f75b6416c")
+                .url("https://newsapi.org/v2/top-headlines?country=us&apiKey=1765f87e4ebc40229e80fd0f75b6416c")
                 .build()
             try {
                 val response = client.newCall(request).execute()
@@ -34,22 +45,22 @@ class ArticlesViewModel : ViewModel() {
                     val articlesResult = arrayListOf<Article>()
                     for ( index in 0..<articlesJson.length()){
                         val articleJson = articlesJson.getJSONObject(index)
-                        val article = Article(
-                            title = articleJson.getString("title"),
-                            description = articleJson.getString("description"),
-                            url = articleJson.getString("url"),
-                            urlToImage = articleJson.getString("urlToImage"),
-                            publishedAt = Date()//articleJson.getString("publishedAt")
-                        )
-                        articlesResult.add(article)
+                        articlesResult.add(Article.fromJson(articleJson))
                     }
                     viewModelScope.launch(Dispatchers.Main) {
-                        _articles.value = articlesResult
+                        _uiState.value = _uiState.value.copy(
+                            articles = articlesResult,
+                            isLoading = false
+                        )
                     }
 
                 }
             } catch (e: Exception) {
                 println(e.localizedMessage)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.localizedMessage
+                )
             }
         }
     }
