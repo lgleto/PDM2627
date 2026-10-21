@@ -24,8 +24,3 @@ class Article (
     }
 }
 
-fun String.toServerDate() : Date?{
-    //2026-10-13T14:15:23Z
-    val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-    return format.parse(this)
-}
