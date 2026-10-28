@@ -27,7 +27,8 @@ import java.util.Date
 @Composable
 fun ArticlesView(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    category : String = ""
 ){
     val viewModel : ArticlesViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -39,7 +40,7 @@ fun ArticlesView(
     )
 
     LaunchedEffect(Unit) {
-        viewModel.fetchArticles()
+        viewModel.fetchArticles(category = category)
     }
 }
 

@@ -23,15 +23,18 @@ class ArticlesViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ArticlesViewState())
     val uiState : StateFlow<ArticlesViewState> = _uiState.asStateFlow()
 
-    fun fetchArticles(){
+    fun fetchArticles(category : String = ""){
         _uiState.value = _uiState.value.copy(
             isLoading = true,
             error = null
         )
+
+        val categoryParam = if(category.isNotEmpty()) "&category=$category" else ""
+
         viewModelScope.launch(Dispatchers.IO) {
             val client = OkHttpClient()
             val request = Request.Builder()
-                .url("https://newsapi.org/v2/top-headlines?country=us&apiKey=1765f87e4ebc40229e80fd0f75b6416c")
+                .url("https://newsapi.org/v2/top-headlines?country=us$categoryParam&apiKey=1765f87e4ebc40229e80fd0f75b6416c")
                 .build()
             try {
                 val response = client.newCall(request).execute()

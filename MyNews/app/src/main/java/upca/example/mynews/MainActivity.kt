@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import upca.example.mynews.ui.components.MyBottomBar
 import upca.example.mynews.ui.components.MyTopBar
 import upca.example.mynews.ui.home.ArticleDetailView
 import upca.example.mynews.ui.home.ArticlesView
@@ -48,19 +49,52 @@ class MainActivity : ComponentActivity() {
                             isBaseScreen = isBaseScreen,
                             actions = topBarActions
                         )
+                    },
+                    bottomBar = {
+                        MyBottomBar(
+                            navController = navController
+                        )
                     }
                     ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Articles.route,
+                        startDestination = Screen.Home.route,
                         modifier = Modifier.padding(innerPadding)
                     ){
-                        composable(Screen.Articles.route){
+                        composable(Screen.Home.route){
                             title = "My News"
                             isBaseScreen = true
                             topBarActions = {}
                             ArticlesView(
-                                navController = navController
+                                navController = navController,
+                                category = ""
+                            )
+                        }
+                        composable(Screen.Health.route){
+                            title = "Health"
+                            isBaseScreen = true
+                            topBarActions = {}
+                            ArticlesView(
+                                navController = navController,
+                                category = "health"
+                            )
+                        }
+                        composable(Screen.Sports.route){
+                            title = "Sports"
+                            isBaseScreen = true
+                            topBarActions = {}
+                            ArticlesView(
+                                navController = navController,
+                                category = "sports"
+                            )
+                        }
+                        composable(Screen.Technology.route){
+                            title = "Technology"
+                            isBaseScreen = true
+                            topBarActions = {}
+                            ArticlesView(
+                                navController = navController,
+                                category = "technology"
                             )
                         }
                         composable(Screen.ArticleDetail.route){ backStackEntry ->
@@ -96,7 +130,10 @@ class MainActivity : ComponentActivity() {
 
 
 sealed class Screen(val route: String) {
-    object Articles : Screen("articles")
+    object Home : Screen("home")
+    object Health : Screen("health")
+    object Sports : Screen("sports")
+    object Technology : Screen("technology")
     object ArticleDetail : Screen("article_detail/{title}/{url}")
 }
 
