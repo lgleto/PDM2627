@@ -1,7 +1,7 @@
-package upca.example.mynews
+package upca.example.mynews.models
 
 import org.json.JSONObject
-import java.text.SimpleDateFormat
+import upca.example.mynews.toServerDate
 import java.util.Date
 
 class Article (

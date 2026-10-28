@@ -1,4 +1,4 @@
-package upca.example.mynews
+package upca.example.mynews.ui.home
 
 import android.webkit.WebView
 import android.webkit.WebViewClient
