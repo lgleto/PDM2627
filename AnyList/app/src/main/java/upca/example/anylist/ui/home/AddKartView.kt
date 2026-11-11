@@ -1,10 +1,9 @@
-package upca.example.anylist
+package upca.example.myshoppinglist.ui.home.kart
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -23,64 +22,55 @@ import androidx.navigation.compose.rememberNavController
 import upca.example.anylist.ui.theme.AnyListTheme
 
 @Composable
-fun LoginView (
+fun AddKartView(
     modifier: Modifier = Modifier,
-    navController : NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
 ){
 
-    val viewModel : LoginViewModel = viewModel()
+    val viewModel : AddKartViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    ) {
         TextField(
-            value = uiState.email,
-            label = {
-                Text("Email")
-            },
+            value = uiState.kartName?:"",
+            label = { Text("Name") },
+            modifier = Modifier.padding(8.dp),
             onValueChange = {
-                viewModel.updateEmail(it)
-            },
-            modifier = Modifier.padding(8.dp)
-        )
-        TextField(
-            value = uiState.password,
-            label = {
-                Text("Password")
-            },
-            onValueChange = {
-                viewModel.updatePassword(it)
-            },
-            modifier = Modifier.padding(8.dp)
+                viewModel.editKartName(it)
+            }
         )
         Button(
             modifier = Modifier.padding(8.dp),
             onClick = {
-                viewModel.login {
-                    navController.navigate(Screen.Home.route)
-                }
+                viewModel.addKart()
+                navController.popBackStack()
             },
             enabled = !uiState.isLoading
         ) {
-            Text("Login")
-            if(uiState.isLoading){
+            Text("Add Kart")
+            if (uiState.isLoading){
                 CircularProgressIndicator(
+                    modifier = Modifier.padding(8.dp),
                     color = Color.White,
-                    modifier = Modifier
-                        .padding(8.dp)
                 )
             }
         }
+        uiState.error?.let{
+            Text(it)
+        }
+
     }
+
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LoginViewPreview(){
-    AnyListTheme {
-        LoginView()
+fun AddKartViewPreview() {
+    AnyListTheme () {
+        AddKartView()
     }
 }
