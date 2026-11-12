@@ -64,6 +64,13 @@ fun KartView (
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
+                            .clickable{
+                                navController
+                                    .navigate(
+                                        Screen.KartDetail.route
+                                            .replace("{kartId}", kart.id!!)
+                                    )
+                            }
                     )
                 }
             }
